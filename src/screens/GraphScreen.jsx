@@ -1,227 +1,139 @@
-import { View, Text, StyleSheet, Dimensions, SafeAreaView, TouchableOpacity, ScrollView, StatusBar } from "react-native"
-import { BarChart } from "react-native-chart-kit"
+"use client"
+
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, StatusBar, StyleSheet } from "react-native"
 
 export default function GraphScreen({ route, navigation }) {
   const { valorFinal, valorAvista, parcelas, juros } = route.params
 
-  const screenWidth = Dimensions.get("window").width
-  const chartWidth = screenWidth - 40
-
-  // Dados para o gráfico de barras
-  const barData = {
-    labels: ["À Vista", "Parcelado"],
-    datasets: [
-      {
-        data: [Number.parseFloat(valorAvista), Number.parseFloat(valorFinal)],
-      },
-    ],
-  }
-
-  // Dados para o gráfico de pizza (composição do valor parcelado)
-  const valorPrincipal = Number.parseFloat(valorAvista)
-  const valorJuros = Number.parseFloat(valorFinal) - Number.parseFloat(valorAvista)
-
-  const chartConfig = {
-    backgroundColor: "#ffffff",
-    backgroundGradientFrom: "#ffffff",
-    backgroundGradientTo: "#ffffff",
-    decimalPlaces: 2,
-    color: (opacity = 1) => `rgba(56, 161, 105, ${opacity})`,
-    labelColor: (opacity = 1) => `rgba(74, 85, 104, ${opacity})`,
-    style: {
-      borderRadius: 16,
-    },
-    propsForDots: {
-      r: "6",
-      strokeWidth: "2",
-      stroke: "#38a169",
-    },
-    propsForBackgroundLines: {
-      strokeDasharray: "",
-      stroke: "#e2e8f0",
-      strokeWidth: 1,
-    },
-  }
+  const valorAvistaNum = Number(valorAvista)
+  const valorFinalNum = Number(valorFinal)
+  const valorJuros = valorFinalNum - valorAvistaNum
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={estilos.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1a365d" />
-
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerGradient}>
-          <View style={styles.headerContent}>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-              <Text style={styles.backIcon}>←</Text>
-            </TouchableOpacity>
-            <View style={styles.headerTextContainer}>
-              <Text style={styles.headerTitle}>Análise Gráfica</Text>
-              <Text style={styles.headerSubtitle}>Comparativo visual da sua simulação</Text>
-            </View>
+      <View style={estilos.header}>
+        <View style={estilos.headerGradient}>
+          <TouchableOpacity style={estilos.backButton} onPress={() => navigation.goBack()}>
+            <Text style={estilos.backButtonText}>←</Text>
+          </TouchableOpacity>
+          <View style={estilos.headerTextContainer}>
+            <Text style={estilos.headerTitle}>Análise Gráfica</Text>
+            <Text style={estilos.headerSubtitle}>Comparativo visual da sua simulação</Text>
           </View>
         </View>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Card de resumo */}
-        <View style={styles.summaryCard}>
-          <View style={styles.summaryHeader}>
-            <Text style={styles.summaryIcon}>📊</Text>
-            <Text style={styles.summaryTitle}>Resumo da Simulação</Text>
-          </View>
-
-          <View style={styles.summaryGrid}>
-            <View style={styles.summaryItem}>
-              <Text style={styles.summaryLabel}>Parcelas</Text>
-              <Text style={styles.summaryValue}>{parcelas}x</Text>
+      <ScrollView style={estilos.content} showsVerticalScrollIndicator={false}>
+        {/* Resumo */}
+        <View style={estilos.summaryCard}>
+          <Text style={estilos.cardTitle}>Resumo da Simulação 📊</Text>
+          <View style={estilos.summaryRow}>
+            <View style={estilos.summaryItem}>
+              <Text style={estilos.summaryLabel}>Parcelas</Text>
+              <Text style={estilos.summaryValue}>{parcelas}x</Text>
             </View>
-            <View style={styles.summaryItem}>
-              <Text style={styles.summaryLabel}>Taxa</Text>
-              <Text style={styles.summaryValue}>{juros}% a.m.</Text>
+            <View style={estilos.summaryItem}>
+              <Text style={estilos.summaryLabel}>Taxa</Text>
+              <Text style={estilos.summaryValue}>{juros}% a.m.</Text>
             </View>
-            <View style={styles.summaryItem}>
-              <Text style={styles.summaryLabel}>Diferença</Text>
-              <Text style={[styles.summaryValue, styles.economyValue]}>
-                R$ {(Number.parseFloat(valorFinal) - Number.parseFloat(valorAvista)).toFixed(2)}
-              </Text>
+            <View style={estilos.summaryItem}>
+              <Text style={estilos.summaryLabel}>Diferença</Text>
+              <Text style={[estilos.summaryValue, estilos.summaryValueRed]}>R$ {valorJuros.toFixed(2)}</Text>
             </View>
           </View>
         </View>
 
-        {/* Gráfico de barras comparativo */}
-        <View style={styles.chartCard}>
-          <View style={styles.chartHeader}>
-            <Text style={styles.chartIcon}>📊</Text>
-            <Text style={styles.chartTitle}>Comparativo de Valores</Text>
-          </View>
+        {/* Gráfico visual simples */}
+        <View style={estilos.chartCard}>
+          <Text style={estilos.cardTitle}>Comparativo de Valores 📊</Text>
 
-          <View style={styles.chartContainer}>
-            <BarChart
-              style={styles.chart}
-              data={barData}
-              width={chartWidth - 48}
-              height={220}
-              yAxisLabel="R$ "
-              chartConfig={chartConfig}
-              verticalLabelRotation={0}
-              fromZero
-              showValuesOnTopOfBars
-            />
-          </View>
+          <View style={estilos.chartContainer}>
+            <View style={estilos.chartItem}>
+              <View style={estilos.chartHeader}>
+                <Text style={estilos.chartLabel}>À Vista</Text>
+                <Text style={estilos.chartValue}>R$ {valorAvistaNum.toFixed(2)}</Text>
+              </View>
+              <View style={estilos.chartBarContainer}>
+                <View
+                  style={[
+                    estilos.chartBar,
+                    estilos.chartBarGreen,
+                    { width: `${(valorAvistaNum / valorFinalNum) * 100}%` },
+                  ]}
+                >
+                  <Text style={estilos.chartBarText}>{((valorAvistaNum / valorFinalNum) * 100).toFixed(0)}%</Text>
+                </View>
+              </View>
+            </View>
 
-          <View style={styles.chartLegend}>
-            <View style={styles.legendItem}>
-              <View style={[styles.legendColor, { backgroundColor: "#38a169" }]} />
-              <Text style={styles.legendText}>Valores em Reais (R$)</Text>
+            <View style={estilos.chartItem}>
+              <View style={estilos.chartHeader}>
+                <Text style={estilos.chartLabel}>Parcelado</Text>
+                <Text style={estilos.chartValue}>R$ {valorFinalNum.toFixed(2)}</Text>
+              </View>
+              <View style={estilos.chartBarContainer}>
+                <View style={[estilos.chartBar, estilos.chartBarRed, { width: "100%" }]}>
+                  <Text style={estilos.chartBarText}>100%</Text>
+                </View>
+              </View>
             </View>
           </View>
         </View>
 
-        {/* Gráfico de pizza simulado - composição */}
+        {/* Composição do valor */}
         {valorJuros > 0 && (
-          <View style={styles.chartCard}>
-            <View style={styles.chartHeader}>
-              <Text style={styles.chartIcon}>🥧</Text>
-              <Text style={styles.chartTitle}>Composição do Valor Parcelado</Text>
+          <View style={estilos.compositionCard}>
+            <Text style={estilos.cardTitle}>Composição do Valor Parcelado 🥧</Text>
+            <View style={estilos.pieChart}>
+              <View style={[estilos.pieSegment, estilos.pieSegmentGreen, { flex: valorAvistaNum / valorFinalNum }]} />
+              <View style={[estilos.pieSegment, estilos.pieSegmentRed, { flex: valorJuros / valorFinalNum }]} />
             </View>
-
-            {/* Gráfico de pizza simulado com barras */}
-            <View style={styles.pieSimulated}>
-              <View style={styles.pieBar}>
-                <View
-                  style={[
-                    styles.pieSegment,
-                    styles.pieSegmentPrincipal,
-                    { flex: valorPrincipal / Number.parseFloat(valorFinal) },
-                  ]}
-                />
-                <View
-                  style={[
-                    styles.pieSegment,
-                    styles.pieSegmentJuros,
-                    { flex: valorJuros / Number.parseFloat(valorFinal) },
-                  ]}
-                />
+            <View style={estilos.compositionLegend}>
+              <View style={estilos.legendItem}>
+                <Text style={estilos.legendLabel}>Valor Principal</Text>
+                <Text style={estilos.legendValue}>R$ {valorAvistaNum.toFixed(2)}</Text>
+                <Text style={estilos.legendPercentage}>{((valorAvistaNum / valorFinalNum) * 100).toFixed(1)}%</Text>
               </View>
-            </View>
-
-            <View style={styles.pieStats}>
-              <View style={styles.pieStatItem}>
-                <View style={[styles.pieStatColor, { backgroundColor: "#38a169" }]} />
-                <View style={styles.pieStatContent}>
-                  <Text style={styles.pieStatLabel}>Valor Principal</Text>
-                  <Text style={styles.pieStatValue}>R$ {valorPrincipal.toFixed(2)}</Text>
-                  <Text style={styles.pieStatPercent}>
-                    {((valorPrincipal / Number.parseFloat(valorFinal)) * 100).toFixed(1)}%
-                  </Text>
-                </View>
-              </View>
-
-              <View style={styles.pieStatItem}>
-                <View style={[styles.pieStatColor, { backgroundColor: "#e53e3e" }]} />
-                <View style={styles.pieStatContent}>
-                  <Text style={styles.pieStatLabel}>Juros</Text>
-                  <Text style={styles.pieStatValue}>R$ {valorJuros.toFixed(2)}</Text>
-                  <Text style={styles.pieStatPercent}>
-                    {((valorJuros / Number.parseFloat(valorFinal)) * 100).toFixed(1)}%
-                  </Text>
-                </View>
+              <View style={estilos.legendItem}>
+                <Text style={estilos.legendLabel}>Juros</Text>
+                <Text style={estilos.legendValue}>R$ {valorJuros.toFixed(2)}</Text>
+                <Text style={estilos.legendPercentage}>{((valorJuros / valorFinalNum) * 100).toFixed(1)}%</Text>
               </View>
             </View>
           </View>
         )}
 
-        {/* Card de insights */}
-        <View style={styles.insightsCard}>
-          <View style={styles.insightsHeader}>
-            <Text style={styles.insightsIcon}>💡</Text>
-            <Text style={styles.insightsTitle}>Insights Financeiros</Text>
-          </View>
-
-          <View style={styles.insightsList}>
-            {valorJuros === 0 ? (
-              <View style={styles.insightItem}>
-                <Text style={styles.insightIcon}>✅</Text>
-                <Text style={styles.insightText}>Excelente! Você não pagará juros nesta compra.</Text>
-              </View>
-            ) : (
-              <>
-                <View style={styles.insightItem}>
-                  <Text style={styles.insightIcon}>📈</Text>
-                  <Text style={styles.insightText}>
-                    Você pagará R$ {valorJuros.toFixed(2)} a mais que o valor à vista.
-                  </Text>
-                </View>
-                <View style={styles.insightItem}>
-                  <Text style={styles.insightIcon}>🧮</Text>
-                  <Text style={styles.insightText}>
-                    O valor dos juros representa {((valorJuros / valorPrincipal) * 100).toFixed(1)}% do valor original.
-                  </Text>
-                </View>
-              </>
-            )}
-
-            <View style={styles.insightItem}>
-              <Text style={styles.insightIcon}>💳</Text>
-              <Text style={styles.insightText}>
-                Cada parcela de R$ {(Number.parseFloat(valorFinal) / parcelas).toFixed(2)} será debitada mensalmente.
+        {/* Dicas */}
+        <View style={estilos.tipsCard}>
+          <Text style={estilos.tipsTitle}>Dicas Financeiras 💡</Text>
+          {valorJuros === 0 ? (
+            <Text style={estilos.tipsText}>✅ Excelente! Você não pagará juros nesta compra.</Text>
+          ) : (
+            <View style={estilos.tipsContainer}>
+              <Text style={estilos.tipsText}>
+                📈 Você pagará R$ {valorJuros.toFixed(2)} a mais que o valor à vista.
+              </Text>
+              <Text style={estilos.tipsText}>
+                🧮 O valor dos juros representa {((valorJuros / valorAvistaNum) * 100).toFixed(1)}% do valor original.
               </Text>
             </View>
-          </View>
+          )}
+          <Text style={estilos.tipsText}>
+            💳 Cada parcela de R$ {(valorFinalNum / parcelas).toFixed(2)} será debitada mensalmente.
+          </Text>
         </View>
 
-        {/* Botões de ação */}
-        <View style={styles.actionButtons}>
-          <TouchableOpacity style={styles.primaryButton} onPress={() => navigation.navigate("Home")}>
-            <View style={styles.buttonGradient}>
-              <Text style={styles.buttonIcon}>🔄</Text>
-              <Text style={styles.primaryButtonText}>Nova Simulação</Text>
+        {/* Ações */}
+        <View style={estilos.actionsContainer}>
+          <TouchableOpacity style={estilos.primaryButton} onPress={() => navigation.navigate("Marketplace")}>
+            <View style={estilos.primaryButtonGradient}>
+              <Text style={estilos.primaryButtonText}>🔄 Nova Simulação</Text>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.goBack()}>
-            <Text style={styles.secondaryButtonIcon}>←</Text>
-            <Text style={styles.secondaryButtonText}>Voltar aos Resultados</Text>
+          <TouchableOpacity style={estilos.secondaryButton} onPress={() => navigation.goBack()}>
+            <Text style={estilos.secondaryButtonText}>← Voltar aos Resultados</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -229,7 +141,7 @@ export default function GraphScreen({ route, navigation }) {
   )
 }
 
-const styles = StyleSheet.create({
+const estilos = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f7fafc",
@@ -242,8 +154,6 @@ const styles = StyleSheet.create({
     paddingTop: 20,
     paddingBottom: 30,
     paddingHorizontal: 20,
-  },
-  headerContent: {
     flexDirection: "row",
     alignItems: "center",
   },
@@ -251,7 +161,7 @@ const styles = StyleSheet.create({
     padding: 8,
     marginRight: 12,
   },
-  backIcon: {
+  backButtonText: {
     fontSize: 24,
     color: "#fff",
   },
@@ -277,7 +187,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 16,
     padding: 20,
-    marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -286,47 +195,38 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 5,
+    marginBottom: 20,
   },
-  summaryHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  summaryIcon: {
-    fontSize: 24,
-    marginRight: 12,
-  },
-  summaryTitle: {
+  cardTitle: {
     fontSize: 18,
     fontWeight: "600",
     color: "#1a365d",
+    marginBottom: 12,
   },
-  summaryGrid: {
+  summaryRow: {
     flexDirection: "row",
     justifyContent: "space-between",
   },
   summaryItem: {
-    alignItems: "center",
     flex: 1,
+    alignItems: "center",
   },
   summaryLabel: {
     fontSize: 14,
-    color: "#718096",
-    marginBottom: 4,
+    color: "#4a5568",
   },
   summaryValue: {
-    fontSize: 18,
+    fontSize: 16,
     fontWeight: "600",
-    color: "#2d3748",
+    color: "#1a202c",
   },
-  economyValue: {
+  summaryValueRed: {
     color: "#e53e3e",
   },
   chartCard: {
     backgroundColor: "#fff",
     borderRadius: 16,
-    padding: 24,
-    marginBottom: 20,
+    padding: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -335,138 +235,129 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 5,
+    marginBottom: 20,
+  },
+  chartContainer: {
+    gap: 16,
+  },
+  chartItem: {
+    gap: 4,
   },
   chartHeader: {
     flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 20,
+    justifyContent: "space-between",
+    marginBottom: 4,
   },
-  chartIcon: {
-    fontSize: 20,
-    marginRight: 12,
-  },
-  chartTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#1a365d",
-  },
-  chartContainer: {
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  chart: {
-    borderRadius: 16,
-  },
-  chartLegend: {
-    alignItems: "center",
-  },
-  legendItem: {
-    flexDirection: "row",
-    alignItems: "center",
-  },
-  legendColor: {
-    width: 12,
-    height: 12,
-    borderRadius: 6,
-    marginRight: 8,
-  },
-  legendText: {
+  chartLabel: {
     fontSize: 14,
     color: "#4a5568",
   },
-  pieSimulated: {
+  chartValue: {
+    fontSize: 14,
+    fontWeight: "600",
+    color: "#1a202c",
+  },
+  chartBarContainer: {
+    width: "100%",
+    height: 24,
+    backgroundColor: "#e2e8f0",
+    borderRadius: 12,
+  },
+  chartBar: {
+    height: 24,
+    borderRadius: 12,
+    flexDirection: "row",
     alignItems: "center",
+    justifyContent: "flex-end",
+    paddingRight: 8,
+  },
+  chartBarGreen: {
+    backgroundColor: "#38a169",
+  },
+  chartBarRed: {
+    backgroundColor: "#e53e3e",
+  },
+  chartBarText: {
+    fontSize: 12,
+    color: "#fff",
+    fontWeight: "500",
+  },
+  compositionCard: {
+    backgroundColor: "#fff",
+    borderRadius: 16,
+    padding: 20,
+    shadowColor: "#000",
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 8,
+    elevation: 5,
     marginBottom: 20,
   },
-  pieBar: {
+  pieChart: {
     flexDirection: "row",
-    width: "80%",
     height: 40,
     borderRadius: 20,
     overflow: "hidden",
+    marginHorizontal: "10%",
+    marginBottom: 16,
   },
   pieSegment: {
-    height: "100%",
+    height: 40,
   },
-  pieSegmentPrincipal: {
+  pieSegmentGreen: {
     backgroundColor: "#38a169",
   },
-  pieSegmentJuros: {
+  pieSegmentRed: {
     backgroundColor: "#e53e3e",
   },
-  pieStats: {
+  compositionLegend: {
     flexDirection: "row",
-    justifyContent: "space-around",
-    marginTop: 16,
+    justifyContent: "space-between",
   },
-  pieStatItem: {
-    flexDirection: "row",
+  legendItem: {
+    flex: 1,
     alignItems: "center",
-    flex: 1,
   },
-  pieStatColor: {
-    width: 16,
-    height: 16,
-    borderRadius: 8,
-    marginRight: 12,
+  legendLabel: {
+    fontSize: 14,
+    color: "#4a5568",
   },
-  pieStatContent: {
-    flex: 1,
+  legendValue: {
+    fontSize: 16,
+    fontWeight: "600",
+    color: "#1a202c",
   },
-  pieStatLabel: {
+  legendPercentage: {
     fontSize: 12,
     color: "#718096",
   },
-  pieStatValue: {
-    fontSize: 16,
-    fontWeight: "600",
-    color: "#2d3748",
-  },
-  pieStatPercent: {
-    fontSize: 12,
-    color: "#4a5568",
-  },
-  insightsCard: {
+  tipsCard: {
     backgroundColor: "#fffbeb",
-    borderRadius: 16,
+    borderRadius: 12,
     padding: 20,
-    marginBottom: 20,
     borderLeftWidth: 4,
     borderLeftColor: "#f6ad55",
+    marginBottom: 20,
   },
-  insightsHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  insightsIcon: {
-    fontSize: 20,
-    marginRight: 8,
-  },
-  insightsTitle: {
+  tipsTitle: {
     fontSize: 16,
     fontWeight: "600",
     color: "#744210",
+    marginBottom: 8,
   },
-  insightsList: {
-    gap: 12,
+  tipsContainer: {
+    gap: 4,
   },
-  insightItem: {
-    flexDirection: "row",
-    alignItems: "flex-start",
-  },
-  insightIcon: {
-    fontSize: 16,
-    marginRight: 8,
-    marginTop: 2,
-  },
-  insightText: {
+  tipsText: {
     fontSize: 14,
     color: "#744210",
-    flex: 1,
     lineHeight: 20,
+    marginBottom: 8,
   },
-  actionButtons: {
+  actionsContainer: {
     gap: 12,
     marginBottom: 30,
   },
@@ -474,17 +365,11 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
   },
-  buttonGradient: {
-    flexDirection: "row",
+  primaryButtonGradient: {
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 16,
-    paddingHorizontal: 24,
     backgroundColor: "#38a169",
-  },
-  buttonIcon: {
-    fontSize: 20,
-    marginRight: 8,
   },
   primaryButtonText: {
     color: "#fff",
@@ -492,22 +377,16 @@ const styles = StyleSheet.create({
     fontWeight: "600",
   },
   secondaryButton: {
-    flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 16,
-    paddingHorizontal: 24,
     backgroundColor: "#fff",
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: "#3182ce",
-  },
-  secondaryButtonIcon: {
-    fontSize: 18,
-    marginRight: 8,
+    borderColor: "#2563eb",
   },
   secondaryButtonText: {
-    color: "#3182ce",
+    color: "#2563eb",
     fontSize: 16,
     fontWeight: "600",
   },

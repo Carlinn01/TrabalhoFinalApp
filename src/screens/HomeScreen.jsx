@@ -1,7 +1,7 @@
 "use client"
 
 import { useState } from "react"
-import { View, Text, TextInput, TouchableOpacity, StyleSheet, SafeAreaView, ScrollView, StatusBar } from "react-native"
+import { View, Text, TextInput, TouchableOpacity, SafeAreaView, ScrollView, StatusBar, StyleSheet } from "react-native"
 
 export default function HomeScreen({ navigation }) {
   const [valor, setValor] = useState("")
@@ -9,143 +9,129 @@ export default function HomeScreen({ navigation }) {
   const [juros, setJuros] = useState("")
 
   const handleCalcular = () => {
-    const v = Number.parseFloat(valor.replace(/[^0-9,]/g, "").replace(",", "."))
-    const p = Number.parseInt(parcelas)
-    const j = Number.parseFloat(juros.replace(",", "."))
+    const valorNum = Number.parseFloat(valor.replace(",", "."))
+    const numParcelas = Number.parseInt(parcelas)
+    const jurosNum = Number.parseFloat(juros.replace(",", "."))
 
-    if (!v || !p || isNaN(j)) return
+    if (!valorNum || !numParcelas || isNaN(jurosNum)) return
 
-    let valorFinal = 0
-    let valorParcela = 0
+    const valorFinal = jurosNum === 0 ? valorNum : valorNum * Math.pow(1 + jurosNum / 100, numParcelas)
 
-    if (j === 0) {
-      valorFinal = v
-      valorParcela = v / p
-    } else {
-      valorFinal = v * Math.pow(1 + j / 100, p)
-      valorParcela = valorFinal / p
-    }
-
-    const totalJuros = valorFinal - v
+    const valorParcela = valorFinal / numParcelas
+    const totalJuros = valorFinal - valorNum
 
     navigation.navigate("Result", {
       valorParcela: valorParcela.toFixed(2),
       valorFinal: valorFinal.toFixed(2),
       totalJuros: totalJuros.toFixed(2),
-      valorAvista: v.toFixed(2),
-      parcelas: p,
-      juros: j,
+      valorAvista: valorNum.toFixed(2),
+      parcelas: numParcelas,
+      juros: jurosNum,
     })
   }
 
-  const formatCurrency = (text) => {
-    const numericValue = text.replace(/[^0-9]/g, "")
-    const formattedValue = (numericValue / 100).toLocaleString("pt-BR", {
+  const formatarValor = (texto) => {
+    const numeros = texto.replace(/[^0-9]/g, "")
+    const numeroFloat = Number.parseFloat(numeros) / 100 || 0
+    return numeroFloat.toLocaleString("pt-BR", {
       minimumFractionDigits: 2,
       maximumFractionDigits: 2,
     })
-    return formattedValue
   }
 
-  const handleValorChange = (text) => {
-    const formatted = formatCurrency(text)
-    setValor(formatted)
+  const aoAlterarValor = (texto) => {
+    setValor(formatarValor(texto))
   }
 
-  const isFormValid = valor && parcelas && juros !== ""
+  // Verifica se foi inserido os dados e libera o botão
+  const formularioValido = valor && parcelas && juros !== ""
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={estilos.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1a365d" />
-
-      {/* Header com gradiente simulado */}
-      <View style={styles.header}>
-        <View style={styles.headerGradient}>
-          <View style={styles.headerContent}>
-            <Text style={styles.headerIcon}>💳</Text>
-            <Text style={styles.headerTitle}>Simulador de Parcelamento</Text>
-            <Text style={styles.headerSubtitle}>Calcule suas parcelas com facilidade</Text>
+      <View style={estilos.header}>
+        <View style={estilos.headerGradient}>
+          <View style={estilos.headerContent}>
+            <Text style={estilos.headerTitle}>Simulador de Parcelamento</Text>
+            <Text style={estilos.headerSubtitle}>Calcule suas parcelas com facilidade</Text>
           </View>
         </View>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
-        {/* Card principal */}
-        <View style={styles.mainCard}>
-          <View style={styles.cardHeader}>
-            <Text style={styles.cardIcon}>🧮</Text>
-            <Text style={styles.cardTitle}>Dados da Compra</Text>
+      <ScrollView style={estilos.content} showsVerticalScrollIndicator={false}>
+        <View style={estilos.mainCard}>
+          <View style={estilos.cardHeader}>
+            <Text style={estilos.cardIcon}>🧮</Text>
+            <Text style={estilos.cardTitle}>Dados da Compra</Text>
           </View>
 
           {/* Valor da compra */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>💰 Valor da Compra</Text>
-            <View style={styles.inputContainer}>
-              <Text style={styles.currencySymbol}>R$</Text>
+          <View style={estilos.inputGroup}>
+            <Text style={estilos.inputLabel}>💰 Valor da Compra</Text>
+            <View style={estilos.inputContainer}>
+              <Text style={estilos.currencySymbol}>R$</Text>
               <TextInput
-                style={styles.input}
-                keyboardType="numeric"
+                style={estilos.textInput}
                 value={valor}
-                onChangeText={handleValorChange}
+                onChangeText={aoAlterarValor}
                 placeholder="0,00"
-                placeholderTextColor="#a0aec0"
+                placeholderTextColor="#9ca3af"
+                keyboardType="numeric"
               />
             </View>
           </View>
 
-          {/* Número de parcelas */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>📅 Número de Parcelas</Text>
-            <View style={styles.inputContainer}>
+          {/* Parcelas */}
+          <View style={estilos.inputGroup}>
+            <Text style={estilos.inputLabel}>📅 Número de Parcelas</Text>
+            <View style={estilos.inputContainer}>
               <TextInput
-                style={styles.input}
-                keyboardType="numeric"
+                style={estilos.textInput}
                 value={parcelas}
                 onChangeText={setParcelas}
                 placeholder="12"
-                placeholderTextColor="#a0aec0"
+                placeholderTextColor="#9ca3af"
+                keyboardType="numeric"
               />
-              <Text style={styles.inputSuffix}>x</Text>
+              <Text style={estilos.inputSuffix}>x</Text>
             </View>
           </View>
 
-          {/* Taxa de juros */}
-          <View style={styles.inputGroup}>
-            <Text style={styles.label}>📈 Taxa de Juros Mensal</Text>
-            <View style={styles.inputContainer}>
+          {/* Juros */}
+          <View style={estilos.inputGroup}>
+            <Text style={estilos.inputLabel}>📈 Taxa de Juros Mensal</Text>
+            <View style={estilos.inputContainer}>
               <TextInput
-                style={styles.input}
-                keyboardType="numeric"
+                style={estilos.textInput}
                 value={juros}
                 onChangeText={setJuros}
                 placeholder="2,5"
-                placeholderTextColor="#a0aec0"
+                placeholderTextColor="#9ca3af"
+                keyboardType="numeric"
               />
-              <Text style={styles.inputSuffix}>% a.m.</Text>
+              <Text style={estilos.inputSuffix}>% a.m.</Text>
             </View>
-            <Text style={styles.helperText}>Digite 0 para compras sem juros</Text>
+            <Text style={estilos.helperText}>Digite 0 para compras sem juros</Text>
           </View>
         </View>
 
-        {/* Botão de calcular */}
         <TouchableOpacity
-          style={[styles.calculateButton, !isFormValid && styles.buttonDisabled]}
+          style={[estilos.calculateButton, !formularioValido && estilos.calculateButtonDisabled]}
           onPress={handleCalcular}
-          disabled={!isFormValid}
+          disabled={!formularioValido}
         >
-          <View style={[styles.buttonGradient, !isFormValid && styles.buttonGradientDisabled]}>
-            <Text style={styles.buttonIcon}>🧮</Text>
-            <Text style={styles.buttonText}>Calcular Parcelas</Text>
+          <View style={[estilos.calculateButtonGradient, !formularioValido && estilos.calculateButtonGradientDisabled]}>
+            <Text style={estilos.buttonIcon}>🧮</Text>
+            <Text style={estilos.calculateButtonText}>Calcular Parcelas</Text>
           </View>
         </TouchableOpacity>
 
-        {/* Card de dicas */}
-        <View style={styles.tipsCard}>
-          <View style={styles.tipsHeader}>
-            <Text style={styles.tipsIcon}>💡</Text>
-            <Text style={styles.tipsTitle}>Dicas Importantes</Text>
+        <View style={estilos.tipsCard}>
+          <View style={estilos.tipsHeader}>
+            <Text style={estilos.tipsIcon}>💡</Text>
+            <Text style={estilos.tipsTitle}>Dicas Importantes</Text>
           </View>
-          <Text style={styles.tipsText}>
+          <Text style={estilos.tipsText}>
             • Compare sempre o valor total com o preço à vista{"\n"}• Considere sua capacidade de pagamento mensal{"\n"}
             • Juros compostos aumentam significativamente o valor final
           </Text>
@@ -155,7 +141,7 @@ export default function HomeScreen({ navigation }) {
   )
 }
 
-const styles = StyleSheet.create({
+const estilos = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f7fafc",
@@ -171,10 +157,6 @@ const styles = StyleSheet.create({
   },
   headerContent: {
     alignItems: "center",
-  },
-  headerIcon: {
-    fontSize: 32,
-    marginBottom: 8,
   },
   headerTitle: {
     fontSize: 24,
@@ -225,7 +207,7 @@ const styles = StyleSheet.create({
   inputGroup: {
     marginBottom: 20,
   },
-  label: {
+  inputLabel: {
     fontSize: 16,
     fontWeight: "500",
     color: "#4a5568",
@@ -247,10 +229,10 @@ const styles = StyleSheet.create({
     color: "#4a5568",
     marginRight: 8,
   },
-  input: {
+  textInput: {
     flex: 1,
     fontSize: 18,
-    color: "#2d3748",
+    color: "#1a202c",
     fontWeight: "500",
   },
   inputSuffix: {
@@ -269,25 +251,25 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
   },
-  buttonDisabled: {
+  calculateButtonDisabled: {
     opacity: 0.6,
   },
-  buttonGradient: {
+  calculateButtonGradient: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
-    paddingVertical: 18,
+    paddingVertical: 16,
     paddingHorizontal: 24,
     backgroundColor: "#38a169",
   },
-  buttonGradientDisabled: {
-    backgroundColor: "#a0aec0",
+  calculateButtonGradientDisabled: {
+    backgroundColor: "#9ca3af",
   },
   buttonIcon: {
     fontSize: 20,
     marginRight: 8,
   },
-  buttonText: {
+  calculateButtonText: {
     color: "#fff",
     fontSize: 18,
     fontWeight: "600",

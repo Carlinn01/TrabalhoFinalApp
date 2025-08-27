@@ -1,110 +1,119 @@
-import { View, Text, StyleSheet, TouchableOpacity, SafeAreaView, ScrollView, StatusBar } from "react-native"
+"use client"
+
+import { View, Text, TouchableOpacity, SafeAreaView, ScrollView, StatusBar, StyleSheet } from "react-native"
 
 export default function ResultScreen({ route, navigation }) {
-  const { valorParcela, valorFinal, totalJuros, valorAvista, parcelas, juros } = route.params
+  const { valorParcela, valorFinal, totalJuros, valorAvista, parcelas, juros, produto } = route.params
 
   const economia = Number.parseFloat(valorFinal) - Number.parseFloat(valorAvista)
   const percentualJuros =
     ((Number.parseFloat(valorFinal) - Number.parseFloat(valorAvista)) / Number.parseFloat(valorAvista)) * 100
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={estilos.container}>
       <StatusBar barStyle="light-content" backgroundColor="#1a365d" />
-
-      {/* Header */}
-      <View style={styles.header}>
-        <View style={styles.headerGradient}>
-          <View style={styles.headerContent}>
-            <TouchableOpacity style={styles.backButton} onPress={() => navigation.goBack()}>
-              <Text style={styles.backIcon}>←</Text>
+      <View style={estilos.header}>
+        <View style={estilos.headerGradient}>
+          <View style={estilos.headerContent}>
+            <TouchableOpacity style={estilos.backButton} onPress={() => navigation.goBack()}>
+              <Text style={estilos.backButtonText}>←</Text>
             </TouchableOpacity>
-            <View style={styles.headerTextContainer}>
-              <Text style={styles.headerTitle}>Resultado da Simulação</Text>
-              <Text style={styles.headerSubtitle}>Confira os detalhes do seu parcelamento</Text>
+            <View style={estilos.headerTextContainer}>
+              <Text style={estilos.headerTitle}>Resultado da Simulação</Text>
+              <Text style={estilos.headerSubtitle}>
+                {produto ? `${produto} - ` : ""}Confira os detalhes do seu parcelamento
+              </Text>
             </View>
           </View>
         </View>
       </View>
 
-      <ScrollView style={styles.content} showsVerticalScrollIndicator={false}>
+      <ScrollView style={estilos.content} showsVerticalScrollIndicator={false}>
         {/* Card principal com resultado */}
-        <View style={styles.mainResultCard}>
-          <View style={styles.resultHeader}>
-            <Text style={styles.resultIcon}>✅</Text>
-            <Text style={styles.resultTitle}>Simulação Concluída</Text>
+        <View style={estilos.mainCard}>
+          <View style={estilos.cardHeader}>
+            <Text style={estilos.cardIcon}>✅</Text>
+            <Text style={estilos.cardTitle}>Simulação Concluída</Text>
           </View>
 
           {/* Valor da parcela - destaque */}
-          <View style={styles.highlightCard}>
-            <View style={styles.highlightGradient}>
-              <Text style={styles.highlightLabel}>Valor da Parcela</Text>
-              <Text style={styles.highlightValue}>R$ {valorParcela}</Text>
-              <Text style={styles.highlightSubtext}>{parcelas}x no cartão</Text>
+          <View style={estilos.highlightCard}>
+            <View style={estilos.highlightGradient}>
+              <Text style={estilos.highlightLabel}>Valor da Parcela</Text>
+              <Text style={estilos.highlightValue}>R$ {valorParcela}</Text>
+              <Text style={estilos.highlightSubtext}>{parcelas}x no cartão</Text>
             </View>
           </View>
 
           {/* Detalhes da simulação */}
-          <View style={styles.detailsContainer}>
-            <View style={styles.detailRow}>
-              <View style={styles.detailIcon}>
-                <Text style={styles.detailIconText}>💰</Text>
+          <View style={estilos.detailsContainer}>
+            <View style={estilos.detailRow}>
+              <View style={estilos.detailIcon}>
+                <Text style={estilos.detailIconText}>💰</Text>
               </View>
-              <View style={styles.detailContent}>
-                <Text style={styles.detailLabel}>Valor à Vista</Text>
-                <Text style={styles.detailValue}>R$ {valorAvista}</Text>
-              </View>
-            </View>
-
-            <View style={styles.detailRow}>
-              <View style={styles.detailIcon}>
-                <Text style={styles.detailIconText}>💳</Text>
-              </View>
-              <View style={styles.detailContent}>
-                <Text style={styles.detailLabel}>Total Parcelado</Text>
-                <Text style={styles.detailValue}>R$ {valorFinal}</Text>
+              <View style={estilos.detailContent}>
+                <Text style={estilos.detailLabel}>Valor à Vista</Text>
+                <Text style={estilos.detailValue}>R$ {valorAvista}</Text>
               </View>
             </View>
 
-            <View style={styles.detailRow}>
-              <View style={styles.detailIcon}>
-                <Text style={styles.detailIconText}>📈</Text>
+            <View style={estilos.detailRow}>
+              <View style={estilos.detailIcon}>
+                <Text style={estilos.detailIconText}>💳</Text>
               </View>
-              <View style={styles.detailContent}>
-                <Text style={styles.detailLabel}>Total de Juros</Text>
-                <Text style={[styles.detailValue, styles.jurosValue]}>R$ {totalJuros}</Text>
+              <View style={estilos.detailContent}>
+                <Text style={estilos.detailLabel}>Total Parcelado</Text>
+                <Text style={estilos.detailValue}>R$ {valorFinal}</Text>
               </View>
             </View>
 
-            <View style={styles.detailRow}>
-              <View style={styles.detailIcon}>
-                <Text style={styles.detailIconText}>🧮</Text>
+            <View style={estilos.detailRow}>
+              <View style={estilos.detailIcon}>
+                <Text style={estilos.detailIconText}>📈</Text>
               </View>
-              <View style={styles.detailContent}>
-                <Text style={styles.detailLabel}>Taxa Aplicada</Text>
-                <Text style={styles.detailValue}>{juros}% a.m.</Text>
+              <View style={estilos.detailContent}>
+                <Text style={estilos.detailLabel}>Total de Juros</Text>
+                <Text style={[estilos.detailValue, estilos.detailValueRed]}>R$ {totalJuros}</Text>
+              </View>
+            </View>
+
+            <View style={[estilos.detailRow, estilos.detailRowLast]}>
+              <View style={estilos.detailIcon}>
+                <Text style={estilos.detailIconText}>🧮</Text>
+              </View>
+              <View style={estilos.detailContent}>
+                <Text style={estilos.detailLabel}>Taxa Aplicada</Text>
+                <Text style={estilos.detailValue}>{juros}% a.m.</Text>
               </View>
             </View>
           </View>
         </View>
 
         {/* Card de comparação */}
-        <View style={styles.comparisonCard}>
-          <View style={styles.comparisonHeader}>
-            <Text style={styles.comparisonIcon}>📊</Text>
-            <Text style={styles.comparisonTitle}>Análise Financeira</Text>
+        <View style={estilos.analysisCard}>
+          <View style={estilos.cardHeader}>
+            <Text style={estilos.cardIcon}>📊</Text>
+            <Text style={estilos.cardTitle}>Análise Financeira</Text>
           </View>
 
-          <View style={styles.comparisonContent}>
-            <View style={styles.comparisonItem}>
-              <Text style={styles.comparisonLabel}>Diferença total:</Text>
-              <Text style={[styles.comparisonValue, economia > 0 ? styles.negative : styles.positive]}>
+          <View style={estilos.analysisContainer}>
+            <View style={estilos.analysisRow}>
+              <Text style={estilos.analysisLabel}>Diferença total:</Text>
+              <Text
+                style={[estilos.analysisValue, economia > 0 ? estilos.analysisValueRed : estilos.analysisValueGreen]}
+              >
                 {economia > 0 ? "+" : ""}R$ {Math.abs(economia).toFixed(2)}
               </Text>
             </View>
 
-            <View style={styles.comparisonItem}>
-              <Text style={styles.comparisonLabel}>Percentual de juros:</Text>
-              <Text style={[styles.comparisonValue, percentualJuros > 0 ? styles.negative : styles.positive]}>
+            <View style={estilos.analysisRow}>
+              <Text style={estilos.analysisLabel}>Percentual de juros:</Text>
+              <Text
+                style={[
+                  estilos.analysisValue,
+                  percentualJuros > 0 ? estilos.analysisValueRed : estilos.analysisValueGreen,
+                ]}
+              >
                 {percentualJuros > 0 ? "+" : ""}
                 {percentualJuros.toFixed(2)}%
               </Text>
@@ -113,20 +122,20 @@ export default function ResultScreen({ route, navigation }) {
         </View>
 
         {/* Botões de ação */}
-        <View style={styles.actionButtons}>
+        <View style={estilos.actionsContainer}>
           <TouchableOpacity
-            style={styles.primaryButton}
+            style={estilos.primaryButton}
             onPress={() => navigation.navigate("Graph", { valorFinal, valorAvista, parcelas, juros })}
           >
-            <View style={styles.buttonGradient}>
-              <Text style={styles.buttonIcon}>📊</Text>
-              <Text style={styles.primaryButtonText}>Ver Gráfico Comparativo</Text>
+            <View style={estilos.primaryButtonGradient}>
+              <Text style={estilos.buttonIcon}>📊</Text>
+              <Text style={estilos.primaryButtonText}>Ver Gráfico Comparativo</Text>
             </View>
           </TouchableOpacity>
 
-          <TouchableOpacity style={styles.secondaryButton} onPress={() => navigation.navigate("Home")}>
-            <Text style={styles.secondaryButtonIcon}>🔄</Text>
-            <Text style={styles.secondaryButtonText}>Nova Simulação</Text>
+          <TouchableOpacity style={estilos.secondaryButton} onPress={() => navigation.navigate("Marketplace")}>
+            <Text style={estilos.secondaryButtonIcon}>🔄</Text>
+            <Text style={estilos.secondaryButtonText}>Nova Simulação</Text>
           </TouchableOpacity>
         </View>
       </ScrollView>
@@ -134,7 +143,7 @@ export default function ResultScreen({ route, navigation }) {
   )
 }
 
-const styles = StyleSheet.create({
+const estilos = StyleSheet.create({
   container: {
     flex: 1,
     backgroundColor: "#f7fafc",
@@ -156,7 +165,7 @@ const styles = StyleSheet.create({
     padding: 8,
     marginRight: 12,
   },
-  backIcon: {
+  backButtonText: {
     fontSize: 24,
     color: "#fff",
   },
@@ -178,7 +187,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     marginTop: -15,
   },
-  mainResultCard: {
+  mainCard: {
     backgroundColor: "#fff",
     borderRadius: 16,
     padding: 24,
@@ -192,16 +201,16 @@ const styles = StyleSheet.create({
     elevation: 5,
     marginBottom: 20,
   },
-  resultHeader: {
+  cardHeader: {
     flexDirection: "row",
     alignItems: "center",
     marginBottom: 24,
   },
-  resultIcon: {
-    fontSize: 32,
+  cardIcon: {
+    fontSize: 24,
     marginRight: 12,
   },
-  resultTitle: {
+  cardTitle: {
     fontSize: 20,
     fontWeight: "600",
     color: "#1a365d",
@@ -212,9 +221,10 @@ const styles = StyleSheet.create({
     marginBottom: 24,
   },
   highlightGradient: {
-    padding: 24,
-    alignItems: "center",
     backgroundColor: "#38a169",
+    paddingVertical: 24,
+    paddingHorizontal: 24,
+    alignItems: "center",
   },
   highlightLabel: {
     fontSize: 16,
@@ -223,7 +233,7 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   highlightValue: {
-    fontSize: 32,
+    fontSize: 30,
     fontWeight: "bold",
     color: "#fff",
     marginBottom: 4,
@@ -242,6 +252,9 @@ const styles = StyleSheet.create({
     paddingVertical: 12,
     borderBottomWidth: 1,
     borderBottomColor: "#f1f5f9",
+  },
+  detailRowLast: {
+    borderBottomWidth: 0,
   },
   detailIcon: {
     width: 40,
@@ -269,16 +282,15 @@ const styles = StyleSheet.create({
   detailValue: {
     fontSize: 16,
     fontWeight: "600",
-    color: "#2d3748",
+    color: "#1a202c",
   },
-  jurosValue: {
+  detailValueRed: {
     color: "#e53e3e",
   },
-  comparisonCard: {
+  analysisCard: {
     backgroundColor: "#fff",
     borderRadius: 16,
     padding: 20,
-    marginBottom: 20,
     shadowColor: "#000",
     shadowOffset: {
       width: 0,
@@ -287,45 +299,32 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 8,
     elevation: 5,
+    marginBottom: 20,
   },
-  comparisonHeader: {
-    flexDirection: "row",
-    alignItems: "center",
-    marginBottom: 16,
-  },
-  comparisonIcon: {
-    fontSize: 24,
-    marginRight: 12,
-  },
-  comparisonTitle: {
-    fontSize: 18,
-    fontWeight: "600",
-    color: "#1a365d",
-  },
-  comparisonContent: {
+  analysisContainer: {
     gap: 12,
   },
-  comparisonItem: {
+  analysisRow: {
     flexDirection: "row",
     justifyContent: "space-between",
     alignItems: "center",
     paddingVertical: 8,
   },
-  comparisonLabel: {
-    fontSize: 15,
+  analysisLabel: {
+    fontSize: 14,
     color: "#4a5568",
   },
-  comparisonValue: {
+  analysisValue: {
     fontSize: 16,
     fontWeight: "600",
   },
-  positive: {
-    color: "#38a169",
-  },
-  negative: {
+  analysisValueRed: {
     color: "#e53e3e",
   },
-  actionButtons: {
+  analysisValueGreen: {
+    color: "#38a169",
+  },
+  actionsContainer: {
     gap: 12,
     marginBottom: 30,
   },
@@ -333,13 +332,13 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     overflow: "hidden",
   },
-  buttonGradient: {
+  primaryButtonGradient: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "center",
     paddingVertical: 16,
     paddingHorizontal: 24,
-    backgroundColor: "#3182ce",
+    backgroundColor: "#2563eb",
   },
   buttonIcon: {
     fontSize: 20,
@@ -359,14 +358,14 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderRadius: 12,
     borderWidth: 2,
-    borderColor: "#3182ce",
+    borderColor: "#2563eb",
   },
   secondaryButtonIcon: {
     fontSize: 18,
     marginRight: 8,
   },
   secondaryButtonText: {
-    color: "#3182ce",
+    color: "#2563eb",
     fontSize: 16,
     fontWeight: "600",
   },
