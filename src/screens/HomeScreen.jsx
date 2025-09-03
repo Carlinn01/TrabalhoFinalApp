@@ -136,6 +136,18 @@ export default function HomeScreen({ navigation }) {
             • Juros compostos aumentam significativamente o valor final
           </Text>
         </View>
+
+
+        <View style={estilos.tipsCard}>
+          <View style={estilos.tipsHeader}>
+            <Text style={estilos.tipsTitle}>Sobre:</Text>
+          </View>
+          <Text style={estilos.tipsText}>
+            • Simulador de parcelas de compras com cartão de crédito
+            • Desenvolvido por Carlos Oliveira e Nicolas Pereti.
+          </Text>
+        </View>
+
       </ScrollView>
     </SafeAreaView>
   )
@@ -275,11 +287,11 @@ const estilos = StyleSheet.create({
     fontWeight: "600",
   },
   tipsCard: {
-    backgroundColor: "#fffbeb",
+    backgroundColor: "#00649218",
     borderRadius: 12,
     padding: 20,
     borderLeftWidth: 4,
-    borderLeftColor: "#f6ad55",
+    borderLeftColor: "#000000ff",
     marginBottom: 30,
   },
   tipsHeader: {
